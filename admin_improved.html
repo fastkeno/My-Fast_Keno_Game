@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Fast Keno</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .login-box {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #4b5563;
+        }
+        
+        .login-box h1 { margin-bottom: 30px; color: #fbbf24; }
+        .login-box input { 
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #374151;
+            border: 1px solid #4b5563;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+        
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 12px;
+            border: 1px solid #4b5563;
+        }
+        
+        .header h1 { color: #fbbf24; }
+        .logout-btn {
+            padding: 8px 16px;
+            background: #ef4444;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .logout-btn:hover { background: #dc2626; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .stat-label { color: #9ca3af; font-size: 12px; margin-bottom: 8px; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #fbbf24; }
+        .stat-card.users { border-left-color: #3b82f6; }
+        .stat-card.users .stat-value { color: #60a5fa; }
+        .stat-card.balance { border-left-color: #10b981; }
+        .stat-card.balance .stat-value { color: #34d399; }
+        .stat-card.fraud { border-left-color: #ef4444; }
+        .stat-card.fraud .stat-value { color: #f87171; }
+        
+        .section {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #4b5563;
+        }
+        
+        .section h2 { color: #fbbf24; margin-bottom: 15px; font-size: 18px; }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .table th {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #4b5563;
+        }
+        
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .table tr:hover { background: rgba(255, 255, 255, 0.05); }
+        
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .approve-btn { background: #10b981; color: #fff; }
+        .approve-btn:hover { background: #059669; }
+        
+        .reject-btn { background: #ef4444; color: #fff; }
+        .reject-btn:hover { background: #dc2626; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .badge-pending { background: #fbbf24; color: #000; }
+        .badge-approved { background: #10b981; color: #fff; }
+        .badge-rejected { background: #ef4444; color: #fff; }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4b5563;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn:hover { color: #fbbf24; }
+        .tab-btn.active { color: #fbbf24; border-bottom-color: #fbbf24; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-error { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; color: #fca5a5; }
+        .alert-success { background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10b981; color: #86efac; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- LOGIN FORM -->
+    <div class="login-box" id="login-form">
+        <h1>👮 Fast Keno Admin</h1>
+        <input type="password" id="password" placeholder="Admin Password" onkeypress="if(event.key==='Enter') adminLogin()">
+        <button onclick="adminLogin()">Login</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        <!-- HEADER -->
+        <div class="header">
+            <div>
+                <h1>⚙️ Admin Dashboard</h1>
+                <p style="color: #9ca3af; font-size: 14px;">Real-time game management</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+            <div class="stat-card users">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="stat-users">0</div>
+            </div>
+            <div class="stat-card balance">
+                <div class="stat-label">Total Balance</div>
+                <div class="stat-value" id="stat-balance">0 ETB</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Wagered</div>
+                <div class="stat-value" id="stat-wagered">0 ETB</div>
+            </div>
+            <div class="stat-card fraud">
+                <div class="stat-label">Fraud Alerts (24h)</div>
+                <div class="stat-value" id="stat-fraud">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Current Round</div>
+                <div class="stat-value" id="stat-round">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Players</div>
+                <div class="stat-value" id="stat-active">0</div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('deposits')">💰 Deposits</button>
+                <button class="tab-btn" onclick="switchTab('withdrawals')">📤 Withdrawals</button>
+                <button class="tab-btn" onclick="switchTab('fraud')">🚨 Fraud Logs</button>
+            </div>
+
+            <!-- DEPOSITS TAB -->
+            <div class="tab-content active" id="tab-deposits">
+                <div id="deposits-alert"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deposits-list"></tbody>
+                </table>
+                <div class="empty-state" id="deposits-empty" style="display: none;">No pending deposits</div>
+            </div>
+
+            <!-- WITHDRAWALS TAB -->
+            <div class="tab-content" id="tab-withdrawals">
+                <div id="withdrawals-alert"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Account</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawals-list"></tbody>
+                </table>
+                <div class="empty-state" id="withdrawals-empty" style="display: none;">No pending withdrawals</div>
+            </div>
+
+            <!-- FRAUD LOGS TAB -->
+            <div class="tab-content" id="tab-fraud">
+                <div id="fraud-list" style="max-height: 400px; overflow-y: auto;">
+                    <div class="empty-state">No fraud alerts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let authToken = localStorage.getItem('admin_token');
+
+async function adminLogin() {
+    const password = document.getElementById('password').value;
+    
+    try {
+        const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({password})
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+            authToken = data.token;
+            localStorage.setItem('admin_token', authToken);
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            loadDashboard();
+            setInterval(loadDashboard, 5000);
+        } else {
+            alert('❌ Invalid password');
+            document.getElementById('password').value = '';
+        }
+    } catch (e) {
+        alert('Error: ' + e.message);
+    }
+}
+
+function logout() {
+    localStorage.removeItem('admin_token');
+    authToken = null;
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('dashboard').classList.remove('active');
+    document.getElementById('password').value = '';
+}
+
+async function loadDashboard() {
+    try {
+        const res = await fetch('/api/admin/dashboard', {
+            headers: {'Authorization': `Bearer ${authToken}`}
+        });
+        
+        if (!res.ok) {
+            if (res.status === 401) logout();
+            return;
+        }
+        
+        const data = await res.json();
+        
+        // Update stats
+        document.getElementById('stat-users').textContent = data.total_users;
+        document.getElementById('stat-balance').textContent = data.total_balance.toFixed(2) + ' ETB';
+        document.getElementById('stat-wagered').textContent = data.total_wagered.toFixed(2) + ' ETB';
+        document.getElementById('stat-fraud').textContent = data.fraud_alerts_24h;
+        document.getElementById('stat-round').textContent = data.game_round;
+        document.getElementById('stat-active').textContent = data.active_games;
+    } catch (e) {
+        console.error('Error loading dashboard:', e);
+    }
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+// Check if already logged in
+if (authToken) {
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+    loadDashboard();
+    setInterval(loadDashboard, 5000);
+}
+</script>
+
+</body>
+</html>
