@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_socketio import SocketIO
 import eventlet
 import time
 import threading
+import os
 
 eventlet.monkey_patch()
 
@@ -13,13 +14,14 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # SIMPLE IN-MEMORY DATABASE
 # -------------------------
 users = {}
-withdraw_requests = []
+deposits = []
+withdraws = []
 game_state = {
-    "lobby_id": 10118,
+    "game_id": 10118,
     "status": "betting",
     "time_left": 60,
     "drawn_numbers": [],
-    "history": [],
+    "is_drawing": False,
     "online_users": 0
 }
 
@@ -36,23 +38,33 @@ def get_user(user_id):
     return users[user_id]
 
 # -------------------------
-# DAILY BONUS (simple)
+# SERVE HTML FILES
 # -------------------------
-@app.route("/api/daily-bonus", methods=["POST"])
-def daily_bonus():
-    data = request.json
-    user_id = data["userId"]
-    user = get_user(user_id)
+@app.route("/")
+def index():
+    return send_file("mini_app.html")
 
-    user["balance"] += 10  # bonus
-    return jsonify({"ok": True, "balance": user["balance"]})
+@app.route("/admin")
+def admin():
+    return send_file("admin.html")
+
+# -------------------------
+# GAME STATE
+# -------------------------
+@app.route("/api/game/state")
+def game_state_api():
+    return jsonify({
+        "game_id": game_state["game_id"],
+        "is_drawing": game_state["is_drawing"],
+        "time_left": game_state["time_left"],
+        "last_drawn": game_state["drawn_numbers"]
+    })
 
 # -------------------------
 # BALANCE
 # -------------------------
-@app.route("/api/user/balance")
-def balance():
-    user_id = request.args.get("userId")
+@app.route("/api/balance/<user_id>")
+def balance(user_id):
     user = get_user(user_id)
     return jsonify({"balance": user["balance"]})
 
@@ -78,45 +90,89 @@ def bet():
     return jsonify({"ok": True})
 
 # -------------------------
-# WITHDRAW REQUEST (SMS COPY PASTE STYLE)
+# DEPOSIT REQUEST
 # -------------------------
-@app.route("/api/withdraw", methods=["POST"])
+@app.route("/api/payment/deposit", methods=["POST"])
+def deposit():
+    data = request.json
+    req = {
+        "id": len(deposits) + 1,
+        "userId": data["userId"],
+        "username": data["username"],
+        "amount": float(data["amount"]),
+        "method": data["method"],
+        "tx_id": data["tx_id"],
+        "status": "pending"
+    }
+    deposits.append(req)
+    return jsonify({"ok": True})
+
+# -------------------------
+# WITHDRAW REQUEST
+# -------------------------
+@app.route("/api/payment/withdraw", methods=["POST"])
 def withdraw():
     data = request.json
     user_id = data["userId"]
-    sms = data["smsText"]
-    amount = float(data["amount"])
-
     user = get_user(user_id)
-
+    
+    amount = float(data["amount"])
+    if user["balance"] < amount:
+        return jsonify({"error": "Not enough balance"}), 400
+    
     req = {
-        "id": len(withdraw_requests) + 1,
+        "id": len(withdraws) + 1,
         "userId": user_id,
+        "username": data["username"],
         "amount": amount,
-        "sms": sms,
+        "account": data["account"],
         "status": "pending"
     }
-
-    withdraw_requests.append(req)
-    return jsonify({"ok": True, "request": req})
+    withdraws.append(req)
+    return jsonify({"ok": True})
 
 # -------------------------
-# ADMIN APPROVE WITHDRAW
+# ADMIN - GET REQUESTS
 # -------------------------
-@app.route("/api/admin/withdraw/approve", methods=["POST"])
-def approve_withdraw():
+@app.route("/api/admin/requests")
+def admin_requests():
+    return jsonify({
+        "deposits": [d for d in deposits if d["status"] == "pending"],
+        "withdraws": [w for w in withdraws if w["status"] == "pending"]
+    })
+
+# -------------------------
+# ADMIN - ACTION (APPROVE/REJECT)
+# -------------------------
+@app.route("/api/admin/action", methods=["POST"])
+def admin_action():
     data = request.json
-    req_id = data["id"]
-
-    for r in withdraw_requests:
-        if r["id"] == req_id and r["status"] == "pending":
-            user = get_user(r["userId"])
-            if user["balance"] >= r["amount"]:
-                user["balance"] -= r["amount"]
-                r["status"] = "approved"
-                return jsonify({"ok": True})
-
-    return jsonify({"error": "Invalid request"}), 400
+    action_type = data["type"]
+    request_id = data["id"]
+    action = data["action"]
+    
+    if action_type == "deposit":
+        for d in deposits:
+            if d["id"] == request_id:
+                if action == "approve":
+                    user = get_user(d["userId"])
+                    user["balance"] += d["amount"]
+                    d["status"] = "approved"
+                elif action == "reject":
+                    d["status"] = "rejected"
+                break
+    elif action_type == "withdraw":
+        for w in withdraws:
+            if w["id"] == request_id:
+                if action == "approve":
+                    user = get_user(w["userId"])
+                    user["balance"] -= w["amount"]
+                    w["status"] = "approved"
+                elif action == "reject":
+                    w["status"] = "rejected"
+                break
+    
+    return jsonify({"ok": True})
 
 # -------------------------
 # LEADERBOARD
@@ -129,12 +185,22 @@ def leaderboard():
             "username": uid,
             "balance": u["balance"]
         })
-
     board = sorted(board, key=lambda x: x["balance"], reverse=True)
     return jsonify(board)
 
 # -------------------------
-# GAME LOOP (timer + draw)
+# DAILY BONUS
+# -------------------------
+@app.route("/api/daily-bonus", methods=["POST"])
+def daily_bonus():
+    data = request.json
+    user_id = data["userId"]
+    user = get_user(user_id)
+    user["balance"] += 10
+    return jsonify({"ok": True, "balance": user["balance"]})
+
+# -------------------------
+# GAME LOOP
 # -------------------------
 def game_loop():
     while True:
@@ -142,12 +208,14 @@ def game_loop():
         game_state["time_left"] -= 1
 
         if game_state["time_left"] <= 0:
+            game_state["is_drawing"] = True
             game_state["status"] = "drawing"
-            game_state["drawn_numbers"] = [i for i in range(1, 21)]
+            game_state["drawn_numbers"] = list(range(1, 21))
             socketio.emit("game_update", game_state)
 
             time.sleep(5)
 
+            game_state["is_drawing"] = False
             game_state["status"] = "betting"
             game_state["time_left"] = 60
             game_state["drawn_numbers"] = []
@@ -157,7 +225,7 @@ def game_loop():
 threading.Thread(target=game_loop, daemon=True).start()
 
 # -------------------------
-# SOCKET CONNECT
+# SOCKET EVENTS
 # -------------------------
 @socketio.on("connect")
 def connect():
@@ -173,4 +241,5 @@ def disconnect():
 # RUN
 # -------------------------
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host="0.0.0.0", port=port)
