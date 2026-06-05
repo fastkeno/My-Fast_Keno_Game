@@ -49,8 +49,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: l
 .bonus-card.claimed { background: rgba(16, 185, 129, 0.1); border-color: #10b981; opacity: 0.7; }
 .bonus-day { font-size: 11px; color: #9ca3af; margin-bottom: 5px; }
 .bonus-amount { font-size: 13px; font-weight: bold; color: #fbbf24; }
-.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; display: grid; grid-template-columns: repeat(5, 1fr); background: #111827; padding: 8px 10px; border-top: 1px solid #374151; }
-.nav-tab { padding: 8px 0; text-align: center; background: none; border: none; color: #9ca3af; font-weight: bold; cursor: pointer; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; border-radius: 6px; }
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; display: grid; grid-template-columns: repeat(5, 1fr); background: #111827; padding: 8px; gap: 8px; }
+.nav-tab { padding: 8px 0; text-align: center; background: none; border: none; color: #9ca3af; font-weight: bold; cursor: pointer; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .nav-tab.active { background: #374151; color: #fbbf24; border-radius: 6px; }
 .hidden { display: none !important; }
 .wallet-card { background: #111827; padding: 15px; border-radius: 8px; border: 1px solid #374151; margin-bottom: 15px; }
@@ -109,7 +109,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: l
 <div id="tab-history-content" class="hidden">
 <div class="instruction-title" id="lbl-history-title">የውርርድ ታሪክ</div>
 <div id="history-list" style="max-height: 350px; overflow-y: auto; font-size: 13px;">
-<p style="text-align: center; color: #6b7280; padding: 20px;" id="lbl-no-history">ምንም የተመዘገበ ታሪክ የለም。</p>
+<p style="text-align: center; color: #6b7280; padding: 20px;" id="lbl-no-history">ምንም የተመዘገበ ታሪክ የለም</p>
 </div>
 </div>
 <div id="tab-leaderboard-content" class="hidden">
@@ -171,15 +171,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: l
 const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 const languages = {
-am: { lobbyId:"ዕጣ መለያ", instruction:"10 ቁጥሮችን ይምረጡ (ከ 1 - 80)", liveDraw:"🔮 የቀጥታ ዕጣ አወጣጥ 🔮", betAmount:"የውርርድ መጠን", currency:"ብር", submitBet:"ውርርድ አስምር", betClosed:"ውርርድ ተዘግቷል", drawingStatus:"🎰 ዕጣ ሲወጣ...", nextDraw:"ሚቀጥለው ዕጣ፡", selectAlert:"እባክህ 10 ቁጥሮች ምረጥ!", balanceAlert:"በቂ ሂሳብ የለም!", maxAlert:"ከ 10 ቁጥር ያልበለጠ ይምረጡ!", maxBetAlert:"ከ1000 ብር ያልበለጠ ውርርድ!", betRegistered:"ውርርድ ተመዝግቧል", winAlert:"🎉 አሸንፈዋል!", loseAlert:"😢 ወደ ቀጣዩ ዕጣ!", historyTitle:"የውርርድ ታሪክ", noHistory:"ምንም የተመዘገበ ታሪክ የለም።", leaderboardTitle:"የከፍተኛ አሸናፊዎች ሰሌዳ", thPlayer:"ተጫዋች", thWinnings:"የአጠቃላይ ድል", bonusTitle:"የ7 ቀን ዕለታዊ ስጦታ", bonusDesc:"በየቀኑ በመግባት ነፃ የውርርድ ቦነስዎን ይሰብስቡ!", day:"ቀን", bonusClaimed:"ለዛሬ ስጦታ ተቀብሏል", claimBtn:"ስጦታዬን ተቀበል", resMatches:"የገጠሙ ቁጥሮች", resMult:"ማባዣ", resPayout:"የአሸናፊነት ክፍያ", walletTitle:"💰 የኪስ ቦርሳ", depTitle:"📥 ብር ማስተላለፊያ", depDesc:"ከታች ባሉት አካውንቶች ብር አስገብተው የትራንዛክሽን ቁጥሩን ይላኩ", btnDep:"የክፍያ ማረጋገጫ ላክ", withTitle:"📤 ብር ማውጫ", btnWith:"የማውጫ ጥያቄ አቅርብ", tabGame:"ጨዋታ", tabHistory:"ታሪክ", tabLeaderboard:"መሪዎች", tabBonus:"ስጦታ", tabWallet:"ዋሌት" },
-en: { lobbyId:"Lobby ID", instruction:"Choose 10 numbers (1 to 80)", liveDraw:"🔮 LIVE DRAW IN PROGRESS 🔮", betAmount:"BET AMOUNT", currency:"ETB", submitBet:"Submit Bet", betClosed:"Bet Closed", drawingStatus:"🎰 Drawing in progress...", nextDraw:"Next draw in:", selectAlert:"Please select 10 numbers!", balanceAlert:"Insufficient balance!", maxAlert:"Select no more than 10 numbers!", maxBetAlert:"Max bet is 1000 ETB!", betRegistered:"Bet registered", winAlert:"🎉 You won!", loseAlert:"😢 Better luck next round!", historyTitle:"Bet History", noHistory:"No history yet.", leaderboardTitle:"Top Winners", thPlayer:"Player", thWinnings:"Total Winnings", bonusTitle:"7-Day Daily Bonus", bonusDesc:"Claim your free betting bonus by logging in daily!", day:"Day", bonusClaimed:"Claimed for today", claimBtn:"Claim My Bonus", resMatches:"Matches", resMult:"Multiplier", resPayout:"Payout", walletTitle:"💰 Wallet", depTitle:"📥 Deposit", depDesc:"Transfer ETB to the accounts below and send the Txn ID:", btnDep:"Submit Deposit", withTitle:"📤 Withdraw", btnWith:"Submit Withdrawal Request", tabGame:"Game", tabHistory:"History", tabLeaderboard:"Leaderboard", tabBonus:"Bonus", tabWallet:"Wallet" }
+  am: { lobbyId:"ዕጣ መለያ", instruction:"10 ቁጥሮችን ይምረጡ (ከ 1 - 80)", liveDraw:"🔮 የቀጥታ ዕጣ አወጣጥ 🔮", betAmount:"የውርርድ መጠን", currency:"ብር", submitBet:"ውርርድ አስምር", betClosed:"ውርርድ ዝግ", betRegistered:"ውርርድ ተመዝግቦ", selectAlert:"10 ቁጥሮች ይምረጡ!", balanceAlert:"በቂ ሂሳብ የለህም!", maxAlert:"10 ቁጥር ብቻ ይምረጡ", maxBetAlert:"ከፍተኛ ውርርድ 1000 ብር ነው", winAlert:"✅ አሸንፈዋል!", loseAlert:"❌ ወደቀዋል", historyTitle:"የውርርድ ታሪክ", noHistory:"ምንም የተመዘገበ ታሪክ የለም", leaderboardTitle:"የከፍተኛ አሸናፊዎች ሰሌዳ", thPlayer:"ተጫዋች", thWinnings:"የአጠቃላይ ድል", bonusTitle:"የ7 ቀን ዕለታዊ ስጦታ", bonusDesc:"በየቀኑ በመግባት ነፃ የውርርድ ቦነስዎን ይሰብስቡ!", resMatches:"የገጠሙ ቁጥሮች", resMult:"ማባዣ", resPayout:"የአሸናፊነት ክፍያ", tabGame:"ጨዋታ", tabHistory:"ታሪክ", tabLeaderboard:"መሪዎች", tabBonus:"ስጦታ", tabWallet:"ዋሌት", walletTitle:"ዋሌት", depTitle:"📥 ብር ማስተላለፊያ (Deposit)", depDesc:"ከታች ባሉት አካውንቶች ብር አስገብተው የትራንዛክሽን ቁጥሩን ይላኩ፡", btnDep:"የክፍያ ማረጋገጫ ላክ", withTitle:"📤 ብር ማውጫ (Withdraw)", btnWith:"የማውጫ ጥያቄ አቅርብ", bonusClaimed:"ስጦታ ተቀብሎ", claimBtn:"ስጦታዬን ተቀበል", day:"ቀን", drawingStatus:"🔮 ይሳሉ ይሳሉ... 🔮", nextDraw:"የሚቀጥለው ሳሊ" },
+  en: { lobbyId:"Lobby ID", instruction:"Choose 10 numbers (1 to 80)", liveDraw:"🔮 LIVE DRAW IN PROGRESS 🔮", betAmount:"BET AMOUNT", currency:"ETB", submitBet:"Submit Bet", betClosed:"Bet Closed", betRegistered:"Bet Registered", selectAlert:"Select 10 numbers!", balanceAlert:"Insufficient balance!", maxAlert:"Choose only 10 numbers", maxBetAlert:"Max bet is 1000 ETB", winAlert:"✅ You Won!", loseAlert:"❌ You Lost", historyTitle:"Bet History", noHistory:"No bet history", leaderboardTitle:"Top Winners", thPlayer:"Player", thWinnings:"Total Winnings", bonusTitle:"7-Day Daily Bonus", bonusDesc:"Claim your free betting bonus daily!", resMatches:"Matches", resMult:"Multiplier", resPayout:"Winnings", tabGame:"Game", tabHistory:"History", tabLeaderboard:"Leaders", tabBonus:"Bonus", tabWallet:"Wallet", walletTitle:"Wallet", depTitle:"📥 Deposit", depDesc:"Transfer money to the accounts below and send the transaction ID:", btnDep:"Submit Deposit Verification", withTitle:"📤 Withdraw", btnWith:"Submit Withdrawal Request", bonusClaimed:"Bonus Claimed", claimBtn:"Claim Bonus", day:"Day", drawingStatus:"🔮 DRAWING NOW... 🔮", nextDraw:"Next Draw" }
 };
 let currentLang = "am";
 const userRaw = tg.initDataUnsafe?.user;
 const telegramName = userRaw ? (userRaw.username ? "@" + userRaw.username : `${userRaw.first_name} ${userRaw.last_name || ''}`) : "@Guest_Player";
 const avatarLetter = telegramName.replace("@", "").charAt(0);
 const ADMIN_TELEGRAM_ID = "123456789";
-const state = { userId: userRaw?.id ? String(userRaw.id) : "999999", username: telegramName, selectedNumbers: [], betAmount: 10.0, balance: 0.0, hasBetInCurrentRound: false, currentBonusDay: 1, hasClaimedToday: false, history: [] };
+const state = { userId: userRaw?.id ? String(userRaw.id) : "999999", username: telegramName, selectedNumbers: [], betAmount: 10.0, balance: 0.0, hasBetInCurrentRound: false, currentBonusDay: 1, hasClaimedToday: false };
 let drawInterval = null;
 document.getElementById('user-name').textContent = state.username;
 document.getElementById('user-avatar').textContent = avatarLetter;
@@ -257,12 +257,12 @@ ballsContainer.appendChild(ball); index++;
 function calculateAndShowLiveResult(drawnNumbers) {
 if (!state.hasBetInCurrentRound) return;
 const matches = state.selectedNumbers.filter(num => drawnNumbers.includes(num)).length;
-const payoutTable = { 1:{1:3.5}, 2:{1:1,2:10}, 3:{2:2,3:50}, 4:{2:1.5,3:10,4:80}, 5:{2:1,3:3,4:30,5:150}, 6:{3:2,4:15,5:60,6:500}, 7:{0:1,3:2,4:4,5:20,6:80,7:1000}, 8:{0:1,4:5,5:15,6:50,7:200,8:2000}, 9:{0:0.5,5:2,6:10,7:50,8:200,9:2500}, 10:{0:1,5:1,6:5,7:25,8:150,9:500,10:5000} };
+const payoutTable = { 1:{1:3.5}, 2:{1:1,2:10}, 3:{2:2,3:50}, 4:{2:1.5,3:10,4:80}, 5:{2:1,3:3,4:30,5:150}, 6:{3:2,4:15,5:60,6:500}, 7:{0:1,3:2,4:4,5:20,6:80,7:1000}, 8:{0:1,4:5,5:15,6:50,7:200,8:2000}, 9:{0:0.5,5:5,6:25,7:100,8:500,9:5000}, 10:{5:1,6:10,7:50,8:200,9:1000,10:10000} };
 const multiplier = payoutTable[state.selectedNumbers.length]?.[matches] || 0; const winnings = state.betAmount * multiplier;
 const statusText = document.getElementById('result-status-text');
 if (winnings > 0) { statusText.textContent = languages[currentLang].winAlert; statusText.className = "result-status win"; }
 else { statusText.textContent = languages[currentLang].loseAlert; statusText.className = "result-status lose"; }
-document.getElementById('res-matches').textContent = `${matches}/${state.selectedNumbers.length}`; document.getElementById('res-mult').textContent = `${multiplier}x`; document.getElementById('res-payout').textContent = `${winnings.toFixed(2)} ${languages[currentLang].currency}`;
+document.getElementById('res-matches').textContent = `${matches}/${state.selectedNumbers.length}`; document.getElementById('res-mult').textContent = `${multiplier}x`; document.getElementById('res-payout').textContent = `${winnings.toFixed(2)} ETB`;
 document.getElementById('live-result-modal').classList.remove('hidden');
 addRoundToLocalHistory(matches, multiplier, winnings);
 }
@@ -271,7 +271,7 @@ function addRoundToLocalHistory(matches, mult, win) {
 const historyList = document.getElementById('history-list'); if(historyList.innerHTML.includes("ምንም") || historyList.innerHTML.includes("No history")) historyList.innerHTML = '';
 const curr = languages[currentLang].currency; const item = document.createElement('div');
 item.style.cssText = "background: #111827; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid " + (win > 0 ? "#10b981" : "#ef4444");
-item.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>ዕጣ #${document.getElementById('lobby-id').textContent}</strong><span style="color:${win > 0 ? '#10b981':'#ef4444'}; font-weight:bold;">${win.toFixed(2)} ${curr}</span></div><div style="font-size:12px; color:#9ca3af; margin-top:5px;">${matches} matches | ${mult}x multiplier</div>`;
+item.innerHTML = `<div style="display:flex; justify-content:space-between;"><strong>ዕጣ #${document.getElementById('lobby-id').textContent}</strong><span style="color:${win > 0 ? '#10b981':'#ef4444'}">${win > 0 ? '+' : ''}${win.toFixed(2)} ${curr}</span></div>`;
 historyList.insertBefore(item, historyList.firstChild);
 }
 
@@ -279,7 +279,7 @@ function generateLeaderboard() {
 const list = document.getElementById('leaderboard-list'); list.innerHTML = '';
 const mockWinners = [ { name: "@Dani_Keno", win: 24500 }, { name: state.username, win: 18200 }, { name: "@Ethio_King", win: 15400 }, { name: "@Almaz_99", win: 9800 }, { name: "@Chala_Bet", win: 6300 } ];
 mockWinners.forEach((player, i) => {
-const tr = document.createElement('tr'); tr.innerHTML = `<td><span class="rank-badge rank-${i+1}">${i+1}</span></td><td style="font-weight: ${player.name === state.username ? 'bold':'normal'};">${player.name}</td><td style="text-align: right; color: #fbbf24; font-weight: bold;">${player.win.toLocaleString()} ETB</td>`;
+const tr = document.createElement('tr'); tr.innerHTML = `<td><span class="rank-badge rank-${i+1}">${i+1}</span></td><td style="font-weight: ${player.name === state.username ? 'bold':'normal'};">${player.name}</td><td style="text-align: right;">${player.win.toFixed(2)}</td>`;
 list.appendChild(tr);
 });
 }
@@ -343,7 +343,7 @@ const l = languages[currentLang];
 if (state.selectedNumbers.length < 10) { tg.showAlert(l.selectAlert); return; }
 if (state.betAmount > state.balance) { tg.showAlert(l.balanceAlert); return; }
 try {
-const response = await fetch('/api/game/bet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: state.userId, betAmount: state.betAmount, selectedNumbers: state.selectedNumbers }) });
+const response = await fetch('/api/game/bet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: state.userId, betAmount: state.betAmount, numbers: state.selectedNumbers }) });
 if (response.ok) {
 state.hasBetInCurrentRound = true; const actionBtn = document.getElementById('action-btn'); actionBtn.disabled = true; actionBtn.textContent = l.betRegistered;
 updateLiveBalance();
@@ -354,7 +354,7 @@ updateLiveBalance();
 async function submitDeposit() {
 const amount = document.getElementById('dep-amount').value; const txid = document.getElementById('dep-txid').value; const method = document.getElementById('dep-method').value;
 if(!amount || !txid) { tg.showAlert("እባክህ ሁሉንም ሳጥኖች ሙላ!"); return; }
-await fetch('/api/payment/deposit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: state.userId, username: state.username, amount: amount, tx_id: txid, method: method }) });
+await fetch('/api/payment/deposit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ userId: state.userId, username: state.username, amount: amount, method: method, tx_id: txid }) });
 tg.showAlert("📥 ጥያቄህ ለአድሚን ደርሷል! በቅርቡ ይረጋገጣል።");
 document.getElementById('dep-amount').value = ''; document.getElementById('dep-txid').value = ''; switchTab('game');
 }
@@ -374,13 +374,13 @@ if(data.deposits.length === 0 && data.withdraws.length === 0) { container.innerH
 data.deposits.forEach(r => {
 if(r.status !== "pending") return;
 const div = document.createElement('div'); div.className = 'admin-item';
-div.innerHTML = `<strong>📥 Deposit</strong><br>ተጫዋች: ${r.username}<br>ብር: ${r.amount} ETB (${r.method})<br>Txn ID: ${r.tx_id}<br><button class="btn-approve" onclick="adminAction('deposit', '${r.id}', 'approve')">✓ Approve</button><button class="btn-reject" onclick="adminAction('deposit', '${r.id}', 'reject')">✗ Reject</button>`;
+div.innerHTML = `<strong>📥 Deposit</strong><br>ተጫዋች: ${r.username}<br>ብር: ${r.amount} ETB (${r.method})<br>Txn ID: ${r.tx_id}<br><button class="btn-approve" onclick="adminAction('deposit', ${r.id}, 'approve')">አጽደቅ</button><button class="btn-reject" onclick="adminAction('deposit', ${r.id}, 'reject')">ክልክል</button>`;
 container.appendChild(div);
 });
 data.withdraws.forEach(r => {
 if(r.status !== "pending") return;
 const div = document.createElement('div'); div.className = 'admin-item';
-div.innerHTML = `<strong>📤 Withdraw</strong><br>ተጫዋች: ${r.username}<br>ብር: ${r.amount} ETB<br>አካውንት: ${r.account}<br><button class="btn-approve" onclick="adminAction('withdraw', '${r.id}', 'approve')">✓ Approve</button><button class="btn-reject" onclick="adminAction('withdraw', '${r.id}', 'reject')">✗ Reject</button>`;
+div.innerHTML = `<strong>📤 Withdraw</strong><br>ተጫዋች: ${r.username}<br>ብር: ${r.amount} ETB<br>አካውንት: ${r.account}<br><button class="btn-approve" onclick="adminAction('withdraw', ${r.id}, 'approve')">አጽደቅ</button><button class="btn-reject" onclick="adminAction('withdraw', ${r.id}, 'reject')">ክልክል</button>`;
 container.appendChild(div);
 });
 }
