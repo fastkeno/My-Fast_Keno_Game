@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <style>
+        body { background:#0f172a; color:white; font-family:Arial; padding:20px; }
+        .box { background:#1e293b; padding:15px; margin:10px 0; border-radius:10px; }
+        button { padding:6px 10px; margin:3px; cursor:pointer; }
+    </style>
+</head>
+<body>
+
+<h2>👮 Fast Keno Admin Panel</h2>
+
+<div class="box">
+    <h3>Login</h3>
+    <input id="pass" placeholder="password">
+    <button onclick="login()">Login</button>
+</div>
+
+<div class="box" id="panel" style="display:none;">
+    <h3>Deposits</h3>
+    <div id="deposits"></div>
+
+    <h3>Withdraws</h3>
+    <div id="withdraws"></div>
+
+    <h3>Users</h3>
+    <div id="users"></div>
+</div>
+
+<script>
+
+async function login(){
+    const r = await fetch("/api/admin/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:document.getElementById("pass").value})
+    });
+
+    if(r.ok){
+        document.getElementById("panel").style.display="block";
+        load();
+    } else {
+        alert("wrong password");
+    }
+}
+
+async function load(){
+    const r = await fetch("/api/admin/dashboard");
+    const d = await r.json();
+
+    // deposits
+    document.getElementById("deposits").innerHTML =
+        d.deposits.map(x =>
+        `<div>
+            ${x.userId} - ${x.amount} - ${x.status}
+            <button onclick="approveDep(${x.id})">Approve</button>
+            <button onclick="rejectDep(${x.id})">Reject</button>
+        </div>`
+    ).join("");
+
+    // withdraw
+    document.getElementById("withdraws").innerHTML =
+        (d.withdraws || []).map(x =>
+        `<div>
+            ${x.userId} - ${x.amount} - ${x.status}
+            <button onclick="approveW(${x.id})">Approve</button>
+            <button onclick="rejectW(${x.id})">Reject</button>
+        </div>`
+    ).join("");
+
+    // users
+    document.getElementById("users").innerHTML =
+        Object.entries(d.users).map(([k,v]) =>
+        `<div>
+            ${k} - ${v.balance}
+            <button onclick="add(${k})">+100</button>
+        </div>`
+    ).join("");
+}
+
+async function approveDep(id){
+    await fetch("/api/admin/deposit/approve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    load();
+}
+
+async function rejectDep(id){
+    await fetch("/api/admin/deposit/reject",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    load();
+}
+
+async function approveW(id){
+    await fetch("/api/admin/withdraw/approve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    load();
+}
+
+async function rejectW(id){
+    await fetch("/api/admin/withdraw/reject",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})});
+    load();
+}
+
+async function add(user){
+    await fetch("/api/admin/user/add-balance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({userId:user,amount:100})});
+    load();
+}
+
+setInterval(load,5000);
+
+</script>
+
+</body>
+</html>
